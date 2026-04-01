@@ -115,7 +115,7 @@ class TestExtractKeywords:
              patch("app.services.extractor.get_prompt_messages", return_value=(
                  "sys", "usr", None  # config is None
              )):
-            result = await extract_keywords("A long job description " * 10)
+            await extract_keywords("A long job description " * 10)
 
         # Verify call was made with defaults
         call_kwargs = mock_llm.call_json.call_args

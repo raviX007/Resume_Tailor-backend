@@ -1,9 +1,10 @@
 """Tests for app/services/injector.py and app/latex/writer.py."""
 
-import os, sys
+import os
+import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import pytest
+
 
 from app.latex.writer import (
     replace_between_markers,
@@ -213,7 +214,7 @@ class TestRebuildSkillsSection:
         result = rebuild_skills_section(SKILLS_DICT, order, injectable={})
         assert "NonExistent" not in result
         # Only two categories emitted
-        cat_comments = [l for l in result.split("\n") if l.startswith("% SKILL_CAT:")]
+        cat_comments = [line for line in result.split("\n") if line.startswith("% SKILL_CAT:")]
         assert len(cat_comments) == 2
 
     def test_empty_injectable(self):
@@ -255,7 +256,7 @@ class TestRebuildProjectsSection:
         order = ["ChatBot", "NonExistent", "WebApp"]
         result = rebuild_projects_section(PROJECTS_DICT, order)
         assert "NonExistent" not in result
-        proj_comments = [l for l in result.split("\n") if l.startswith("% PROJECT:")]
+        proj_comments = [line for line in result.split("\n") if line.startswith("% PROJECT:")]
         assert len(proj_comments) == 2
 
     def test_subset_of_projects(self):
