@@ -1,4 +1,11 @@
 """Shared fixtures for resume-tailor backend tests."""
+from app.models import (
+    ExtractedKeywords,
+    MatchResult,
+    ReorderPlan,
+    ResumeAnalysis,
+)
+
 
 import os
 import sys
@@ -32,13 +39,6 @@ def _clear_llm_caches():
     _analysis_cache.clear()
     _extraction_cache.clear()
 
-
-from app.models import (
-    ExtractedKeywords,
-    MatchResult,
-    ReorderPlan,
-    ResumeAnalysis,
-)
 
 
 # ---------------------------------------------------------------------------

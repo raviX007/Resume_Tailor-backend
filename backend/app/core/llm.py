@@ -4,6 +4,9 @@ All calls are async. Thread-safe singleton via asyncio.Lock.
 Langfuse tracing: if langfuse is installed, all OpenAI calls are auto-traced.
 Retry via tenacity for transient failures.
 """
+from app.config import load_settings
+from app.core.constants import MAX_OPENAI_FAILURES
+from app.core.logger import logger
 
 import asyncio
 import json
@@ -24,9 +27,6 @@ try:
 except ImportError:
     from openai import AsyncOpenAI
 
-from app.config import load_settings
-from app.core.constants import MAX_OPENAI_FAILURES
-from app.core.logger import logger
 
 # Transient errors worth retrying
 _RETRYABLE = (httpx.TimeoutException, httpx.ConnectError, openai_errors.APITimeoutError)

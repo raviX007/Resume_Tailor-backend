@@ -1,10 +1,10 @@
 """Tests for app/services/compiler.py — _slugify and filename generation."""
 
-import os, sys
+import os 
+import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
-import pytest
 
 from app.services.compiler import _slugify
 from app.core.constants import FILENAME_MAX_SLUG_LENGTH

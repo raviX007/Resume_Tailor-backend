@@ -20,9 +20,9 @@ from slowapi.errors import RateLimitExceeded
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from app.config import load_settings  # noqa: E402
-from app.core.constants import RATE_LIMIT_PER_MINUTE  # noqa: E402
+
 from app.core.logger import logger  # noqa: E402
-from app.middleware import RequestIdMiddleware, PasswordGateMiddleware, request_id_var  # noqa: E402
+from app.middleware import RequestIdMiddleware, request_id_var  # noqa: E402
 from app.routes import tailor, health  # noqa: E402
 
 settings = load_settings()
