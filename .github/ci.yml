@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (lint + test)
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'push' ||
+      contains(join(github.event.pull_request.changed_files.*.filename, ','), 'backend/')
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - id: changes
+        name: Check for backend changes
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q '^backend/'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: .
+
+      - uses: actions/setup-python@v5
+        if: steps.changes.outputs.changed == 'true' || github.event_name == 'pull_request'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true' || github.event_name == 'pull_request'
+        run: pip install -r requirements-dev.txt ruff
+
+      - name: Lint (ruff)
+        if: steps.changes.outputs.changed == 'true' || github.event_name == 'pull_request'
+        run: ruff check app/ tests/
+
+      - name: Test with coverage
+        if: steps.changes.outputs.changed == 'true' || github.event_name == 'pull_request'
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=70

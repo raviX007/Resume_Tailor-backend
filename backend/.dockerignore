@@ -1,0 +1,11 @@
+.env
+.env.*
+.git
+tests/
+output/
+__pycache__
+.pytest_cache
+*.pyc
+scripts/
+README.md
+requirements-dev.txt

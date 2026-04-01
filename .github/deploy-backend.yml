@@ -1,0 +1,91 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: resume-tailor-backend
+
+jobs:
+  # ─── PHASE 1: TEST ────────────────────────────────
+  test:
+    name: Lint + Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check app/ tests/
+      - name: Test
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=70
+
+  # ─── PHASE 2: BUILD + PUSH TO ECR ─────────────────
+  # ─── PHASE 3: SSH INTO EC2 + DEPLOY ────────────────
+  deploy:
+    name: Build → ECR → EC2
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Auth with AWS (OIDC — no stored keys)
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build Docker image (includes texlive/pdflatex inside the image)
+      - name: Build Docker image
+        id: build
+        run: |
+          IMAGE="${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          docker build -t $IMAGE backend/
+          docker tag $IMAGE ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Push to ECR
+        run: |
+          docker push ${{ steps.build.outputs.image }}
+          docker push ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      # SSH into EC2, pull new image, restart container
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ap-south-1 | \
+              docker login --username AWS --password-stdin \
+              ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com
+
+            cd /home/ec2-user/apps
+            docker compose pull resume-tailor-backend
+            docker compose up -d resume-tailor-backend
+            docker image prune -f
+            echo "Backend deployed: ${{ github.sha }}"

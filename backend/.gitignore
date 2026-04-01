@@ -1,0 +1,41 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Environment / secrets
+.env
+
+# LaTeX output
+output/*.pdf
+output/*.tex
+output/*.aux
+output/*.log
+output/*.out
+output/*.fls
+output/*.fdb_latexmk
+output/*.synctex.gz
+
+# Logs
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+helper/
