@@ -120,10 +120,10 @@ class RegisterRequest(BaseModel):
         v = v.strip()
         if len(v) < 3:
             raise ValueError("Username must be at least 3 characters")
-        if len(v) > 100:
-            raise ValueError("Username must be 100 characters or fewer")
-        if not v.replace("_", "").replace("-", "").replace(".", "").isalnum():
-            raise ValueError("Username may only contain letters, numbers, -, _, .")
+        if len(v) > 50:
+            raise ValueError("Username must be 50 characters or fewer")
+        if not v.replace("_", "").replace("-", "").replace(".", "").replace("@", "").isalnum():
+            raise ValueError("Username may only contain letters, numbers, -, _, ., @")
         return v
 
     @field_validator("password")
