@@ -17,11 +17,13 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     auth_username: str = ""
     auth_password: str = ""
+    database_url: str = "" 
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra="ignore",
     )
 
 

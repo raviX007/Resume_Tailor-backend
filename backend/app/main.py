@@ -23,7 +23,7 @@ from app.config import load_settings  # noqa: E402
 
 from app.core.logger import logger  # noqa: E402
 from app.middleware import RequestIdMiddleware, request_id_var  # noqa: E402
-from app.routes import tailor, health  # noqa: E402
+from app.routes import tailor, health ,auth # noqa: E402
 
 settings = load_settings()
 
@@ -87,3 +87,4 @@ app.mount("/output", StaticFiles(directory=str(output_dir)), name="output")
 
 app.include_router(health.router)
 app.include_router(tailor.router)
+app.include_router(auth.router)

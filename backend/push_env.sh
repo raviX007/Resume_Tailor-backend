@@ -2,9 +2,9 @@
 # push-secrets.sh — reads a .env file, converts to JSON, pushes to AWS Secrets Manager
 #
 # Usage:
-#   ./push-secrets.sh resume-tailor/backend ../resume-tailor/backend/.env
-#   ./push-secrets.sh job-tracker/api      ../job-tracker/api/.env
-#   ./push-secrets.sh job-tracker/pipeline ../job-tracker/pipeline/.env
+#  ./push_env.sh resume-tailor/backend .env
+#   ./push_env.sh job-tracker/api      ../job-tracker/api/.env
+#   ./push_env.sh job-tracker/pipeline ../job-tracker/pipeline/.env
 
 SECRET_NAME="$1"
 ENV_FILE="$2"
@@ -12,7 +12,7 @@ REGION="ap-south-1"
 
 if [ -z "$SECRET_NAME" ] || [ -z "$ENV_FILE" ]; then
   echo "Usage: $0 <secret-name> <env-file-path>"
-  echo "Example: $0 resume-tailor/backend ../resume-tailor/backend/.env"
+  echo "Example: $0 resume-tailor/backend .env"
   exit 1
 fi
 
