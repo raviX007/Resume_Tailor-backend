@@ -509,3 +509,4 @@ If you want a different PDF layout, modify your `.tex` template. The pipeline wo
 - Must have identifiable sections (summary, skills, experience, projects)
 - Must use standard LaTeX commands (`\section`, `\textbf`, `\begin{itemize}`, etc.)
 - Must be UTF-8 encoded and under 2 MB
+db changed
